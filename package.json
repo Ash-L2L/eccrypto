@@ -1,5 +1,5 @@
 {
-  "name": "@toruslabs/eccrypto",
+  "name": "@layertwolabs/eccrypto",
   "version": "3.0.0",
   "description": "JavaScript Elliptic curve cryptography library, includes fix to browser.js so that encrypt/decrypt works",
   "main": "./dist/eccrypto.cjs.js",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/torusresearch/eccrypto.git"
+    "url": "https://github.com/Ash-L2L/eccrypto.git"
   },
   "files": [
     "src",
@@ -34,12 +34,12 @@
     "elliptic",
     "curve"
   ],
-  "author": "Torus Labs",
+  "author": "Layer Two Labs",
   "license": "CC0-1.0",
   "bugs": {
-    "url": "https://github.com/torusresearch/eccrypto/issues"
+    "url": "https://github.com/Ash-L2L/eccrypto/issues"
   },
-  "homepage": "https://github.com/torusresearch/eccrypto",
+  "homepage": "https://github.com/Ash-L2L/eccrypto",
   "devDependencies": {
     "@babel/cli": "^7.21.5",
     "@babel/core": "^7.21.5",

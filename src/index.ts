@@ -72,6 +72,15 @@ async function sha512(msg: Buffer): Promise<Uint8Array> {
   return new Uint8Array(result);
 }
 
+async function AnsiX963Kdf(Px: Buffer): Promise<Uint8Array> {
+  const counter = 1;
+  const counterBuf = Buffer.alloc(4);
+  counterBuf.writeInt32BE(counter, 0);
+  const dataToHash = Buffer.concat([Px, counterBuf]);
+  const res = await sha512(dataToHash);
+  return res;
+}
+
 type AesFunctionType = (iv: Buffer, key: Buffer, data: Buffer) => Promise<Buffer>;
 
 function getAes(op: "encrypt" | "decrypt"): AesFunctionType {
@@ -263,10 +272,12 @@ export const decrypt = async function (privateKey: Buffer, opts: Ecies, _padding
   const padding = _padding ?? false;
   const deriveLocal = padding ? derivePadded : deriveUnpadded;
   const Px = await deriveLocal(privateKey, opts.ephemPublicKey);
-  const hash = await sha512(Px);
+  const hash = await AnsiX963Kdf(Px);
   const encryptionKey = hash.slice(0, 32);
   const macKey = hash.slice(32);
-  const dataToMac = Buffer.concat([opts.iv, opts.ephemPublicKey, opts.ciphertext]);
+  // TEMP: do not include ephemeral pubkey for MAC
+  // const dataToMac = Buffer.concat([opts.iv, opts.ephemPublicKey, opts.ciphertext]);
+  const dataToMac = Buffer.concat([opts.iv, opts.ciphertext]);
   const macGood = await hmacSha256Verify(macKey, dataToMac, opts.mac);
   if (!macGood && padding === false) {
     return decrypt(privateKey, opts, true);
