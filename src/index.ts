@@ -250,15 +250,17 @@ export const encrypt = async function (publicKeyTo: Buffer, msg: Buffer, opts?: 
   while (!isValidPrivateKey(ephemPrivateKey)) {
     ephemPrivateKey = opts.ephemPrivateKey || randomBytes(32);
   }
-  const ephemPublicKey = getPublic(ephemPrivateKey);
+  const ephemPublicKey = getPublicCompressed(ephemPrivateKey);
   const Px = await deriveUnpadded(ephemPrivateKey, publicKeyTo);
-  const hash = await sha512(Px);
+  const hash = await AnsiX963Kdf(Px);
   const iv = opts.iv || randomBytes(16);
   const encryptionKey = hash.slice(0, 32);
   const macKey = hash.slice(32);
   const data = await aesCbcEncrypt(iv, Buffer.from(encryptionKey), msg);
   const ciphertext = data;
-  const dataToMac = Buffer.concat([iv, ephemPublicKey, ciphertext]);
+  // TEMP: do not include ephemeral pubkey for MAC
+  // const dataToMac = Buffer.concat([iv, ephemPublicKey, ciphertext]);
+  const dataToMac = Buffer.concat([iv, ciphertext]);
   const mac = await hmacSha256Sign(Buffer.from(macKey), dataToMac);
   return {
     iv,
