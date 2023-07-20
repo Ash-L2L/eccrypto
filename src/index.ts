@@ -188,7 +188,7 @@ export const sign = async function (privateKey: Buffer, msg: Buffer): Promise<Bu
   );
 };
 
-export const verify = async function (publicKey: Buffer, msg: Buffer, sig: Buffer): Promise<null> {
+export const verify = async function (publicKey: Buffer, msg: Buffer, sig: Buffer): Promise<boolean> {
   assert(publicKey.length === 65 || publicKey.length === 33, "Bad public key");
   if (publicKey.length === 65) {
     assert(publicKey[0] === 4, "Bad public key");
@@ -199,9 +199,9 @@ export const verify = async function (publicKey: Buffer, msg: Buffer, sig: Buffe
   assert(msg.length > 0, "Message should not be empty");
   assert(msg.length <= 32, "Message is too long");
   if (ec.verify(msg, sig, publicKey)) {
-    return null;
+    return true;
   }
-  throw new Error("Bad signature");
+  return false;
 };
 
 export const derive = async function (privateKeyA: Buffer, publicKeyB: Buffer): Promise<Buffer> {
